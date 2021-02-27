@@ -2,16 +2,10 @@ import { createAudioResource } from '../AudioResource';
 import { findPipeline as _findPipeline, StreamType } from '../TransformerGraph';
 import { mocked } from 'ts-jest/utils';
 import { PassThrough, Readable } from 'stream';
+import { silence } from './util';
 jest.mock('../TransformerGraph');
 
 const findPipeline = mocked(_findPipeline, true);
-
-function* silence() {
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-	while (true) {
-		yield Buffer.from([0xf8, 0xff, 0xfe]);
-	}
-}
 
 function createPipe(): any {
 	const stream = new PassThrough();
