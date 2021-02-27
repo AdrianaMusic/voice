@@ -57,7 +57,7 @@ interface CreateAudioPlayerOptions {
 /**
  * The various states that the player can be in.
  */
-type AudioPlayerState =
+export type AudioPlayerState =
 	| {
 			status: AudioPlayerStatus.Idle;
 	  }
