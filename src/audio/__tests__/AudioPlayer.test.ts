@@ -120,4 +120,43 @@ describe('State transitions', () => {
 		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
 		expect(addAudioPlayer).toHaveBeenCalledTimes(1);
 	});
+
+	test('Idle -> Playing -> Paused -> Playing (pause and unpause)', () => {
+		const resource: AudioResource = {
+			pipeline: [],
+			playStream: Readable.from(singleSilence()),
+		};
+		player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		player.play(resource);
+		expect(resource.audioPlayer).toBe(player);
+
+		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		expect(player.checkPlayable()).toBe(true);
+
+		player.pause();
+		expect(player.state.status).toBe(AudioPlayerStatus.Paused);
+
+		player.unpause();
+		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		expect(addAudioPlayer).toHaveBeenCalledTimes(3);
+	});
+
+	test('Idle -> Playing -> Autopaused (no subscribers)', () => {
+		const resource: AudioResource = {
+			pipeline: [],
+			playStream: Readable.from(singleSilence()),
+		};
+		player = createAudioPlayer();
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+
+		player.play(resource);
+		expect(resource.audioPlayer).toBe(player);
+		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		expect(player.checkPlayable()).toBe(true);
+
+		player['_stepPrepare']();
+		expect(player.state.status).toBe(AudioPlayerStatus.AutoPaused);
+		expect(addAudioPlayer).toHaveBeenCalledTimes(2);
+	});
 });
