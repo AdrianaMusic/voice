@@ -102,6 +102,7 @@ export function createAudioResource(input: string | Readable, options: CreateAud
 		return {
 			playStream: input,
 			pipeline: [],
+			name: options.name,
 		};
 	}
 	const streams = transformerPipeline.map((pipe) => pipe.transformer(input));
