@@ -110,6 +110,9 @@
 		"collectCoverage": true,
 		"collectCoverageFrom": [
 			"src/**/*.ts"
+		],
+		"testPathIgnorePatterns": [
+			"__tests__/util"
 		]
 	}
 }
