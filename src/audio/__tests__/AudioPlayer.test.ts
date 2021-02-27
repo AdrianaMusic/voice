@@ -96,4 +96,28 @@ describe('State transitions', () => {
 
 		expect(addAudioPlayer).toHaveBeenCalledTimes(1);
 	});
+
+	test('Idle -> Playing -> Idle (via stream error)', async () => {
+		const resource: AudioResource = {
+			pipeline: [],
+			playStream: Readable.from(singleSilence()),
+		};
+		player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		player.play(resource);
+		expect(resource.audioPlayer).toBe(player);
+
+		expect(player.state.status).toBe(AudioPlayerStatus.Playing);
+		expect(player.checkPlayable()).toBe(true);
+
+		const stateChange: Promise<Error[]> = once(player, 'error');
+		const testError = new Error('audioplayertest error');
+		resource.playStream.emit('error', testError);
+
+		const [error] = await stateChange;
+		expect(error).toBe(testError);
+		expect(player.checkPlayable()).toBe(false);
+		expect(player.state.status).toBe(AudioPlayerStatus.Idle);
+		expect(addAudioPlayer).toHaveBeenCalledTimes(1);
+	});
 });
