@@ -103,5 +103,9 @@
 				"pascal-case"
 			]
 		}
+	},
+	"jest": {
+		"preset": "ts-jest",
+		"testEnvironment": "node"
 	}
 }
